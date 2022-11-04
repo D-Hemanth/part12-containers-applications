@@ -1,7 +1,8 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 
 const configs = require('../util/config')
+const redis = require('../redis')
 
 let visits = 0
 
@@ -11,8 +12,8 @@ router.get('/', async (req, res) => {
 
   res.send({
     ...configs,
-    visits
-  });
-});
+    visits,
+  })
+})
 
-module.exports = router;
+module.exports = router

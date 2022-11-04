@@ -60,4 +60,6 @@ typings/
 # next.js build output
 .next
 
+# to persist data locally for fast access use volumes in docker-compose.dev.yml files
 mongo_data
+redis_data

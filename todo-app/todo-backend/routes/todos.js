@@ -12,13 +12,13 @@ router.get('/', async (_, res) => {
 // http://localhost:3000/todos/statistics route in redis server for counting the todos added to the mongodb
 router.get('/statistics', async (_, res) => {
   const todosCount = await getAsync('count')
-  console.log('todos count:', todosCount)
+  // console.log('todos count:', todosCount)
   res.send({ added_todos: todosCount || 0 })
 })
 
 const todosCounter = async () => {
   const count = await getAsync('count')
-  console.log('count', count)
+  // console.log('count', count)
   // use parseInt to convert the string todos count value from getAsync to a number cause key:value pairs are string values in redis
   return count ? setAsync('count', parseInt(count) + 1) : setAsync('count', 1)
 }

@@ -17,5 +17,5 @@ services:
     ports:
       - 6379:6379
     command: ['redis-server', '--appendonly', 'yes'] # Overwrite the CMD
-    volumes:
+    volumes: # Declare the volume
       - ./redis_data:/data

@@ -8,6 +8,7 @@ const TodoView = () => {
   const [todos, setTodos] = useState([])
 
   const refreshTodos = async () => {
+    // console.log('process.env.REACT_APP_BACKEND_URL', process.env.REACT_APP_BACKEND_URL)
     const { data } = await axios.get('/todos')
     setTodos(data)
   }
@@ -29,7 +30,7 @@ const TodoView = () => {
   const completeTodo = async (todo) => {
     await axios.put(`/todos/${todo._id}`, {
       text: todo.text,
-      done: true
+      done: true,
     })
     refreshTodos()
   }

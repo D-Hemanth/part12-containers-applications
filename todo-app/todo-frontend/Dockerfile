@@ -31,7 +31,7 @@ RUN npm run build
 
 # CMD ["serve", "build"]
 
-# This is a new stage, everything before this is gone, except the files we want to COPY
+# This is the third stage, everything before this is gone, except the files we want to COPY
 FROM nginx:1.20-alpine
 
 # COPY the directory build from build-stage to /usr/share/nginx/html

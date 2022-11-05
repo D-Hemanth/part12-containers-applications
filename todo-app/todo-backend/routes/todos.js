@@ -19,7 +19,7 @@ router.get('/statistics', async (_, res) => {
 const todosCounter = async () => {
   const count = await getAsync('count')
   console.log('count', count)
-  // use parseInt to conver the string todos count value from getAsync to a number
+  // use parseInt to convert the string todos count value from getAsync to a number cause key:value pairs are string values in redis
   return count ? setAsync('count', parseInt(count) + 1) : setAsync('count', 1)
 }
 

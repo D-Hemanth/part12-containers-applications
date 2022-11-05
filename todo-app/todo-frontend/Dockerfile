@@ -1,7 +1,18 @@
 # Each RUN, COPY, and ADD instruction in the Dockerfile adds a layer to the image, and you need to remember to clean up any artifacts you don’t need before moving on to the next layer to keep the image size, build time down & reduce risk of vulnerabilities
 # Or use multi-stage builds, a tried and true solution for the above problems
 
-# The first FROM is now a stage called build-stage
+# First stage FROM is now a stage called test-stage
+FROM node:16 AS test-stage
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN npm ci
+
+RUN CI=true npm test
+
+# The second stage FROM is now a stage called build-stage
 FROM node:16 AS build-stage
 
 WORKDIR /usr/src/app
@@ -11,9 +22,7 @@ ARG REACT_APP_BACKEND_URL
 
 ENV REACT_APP_BACKEND_URL http://localhost:3000
 
-COPY . .
-
-RUN npm ci
+COPY --from=test-stage /usr/src/app /usr/src/app/
 
 RUN npm run build
 

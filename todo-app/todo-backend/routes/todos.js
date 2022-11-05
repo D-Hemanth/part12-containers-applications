@@ -1,6 +1,7 @@
 const express = require('express')
 const { Todo } = require('../mongo')
 const router = express.Router()
+const { getAsync, setAsync } = require('../redis')
 
 /* GET todos listing. */
 router.get('/', async (_, res) => {
@@ -8,8 +9,25 @@ router.get('/', async (_, res) => {
   res.send(todos)
 })
 
+// http://localhost:3000/todos/statistics route in redis server for counting the todos added to the mongodb
+router.get('/statistics', async (_, res) => {
+  const todosCount = await getAsync('count')
+  console.log('todos count:', todosCount)
+  res.send({ added_todos: todosCount || 0 })
+})
+
+const todosCounter = async () => {
+  const count = await getAsync('count')
+  console.log('count', count)
+  // use parseInt to conver the string todos count value from getAsync to a number
+  return count ? setAsync('count', parseInt(count) + 1) : setAsync('count', 1)
+}
+
 /* POST todo to listing. */
 router.post('/', async (req, res) => {
+  // when a new todo is created automatically callback todoCounter function
+  todosCounter()
+
   const todo = await Todo.create({
     text: req.body.text,
     done: false,

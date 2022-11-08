@@ -8,6 +8,8 @@ services:
       dockerfile: ./todo-frontend/dev.Dockerfile # This will simply tell which dockerfile to read
     volumes:
       - ./todo-frontend/:/usr/src/app # The path can be relative, so ./ is enough to say "the same location as the docker-compose.yml"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3000
     ports:
       - 4000:4000
     container_name: todos-frontend-dev # This will name the container todos-frontend-dev as todo-frontend-dev name container already exists in docker so give unique name

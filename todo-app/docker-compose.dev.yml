@@ -10,9 +10,45 @@ services:
       - ./todo-frontend/:/usr/src/app # The path can be relative, so ./ is enough to say "the same location as the docker-compose.yml"
     ports:
       - 4000:4000
-    container_name: todos-frontend-dev # This will name the container todo-frontend-dev
+    container_name: todos-frontend-dev # This will name the container todos-frontend-dev as todo-frontend-dev name container already exists in docker so give unique name
   # debug-helper:
   #   image: busybox
+
+  mongo:
+    image: mongo
+    ports:
+      - 3456:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes:
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - mongo_data:/data/db
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    command: ['redis-server', '--appendonly', 'yes'] # Overwrite the CMD
+    volumes: # Declare the volume
+      - ./todo-backend/redis_data:/data
+  todo-backend:
+    image: todo-backend-dev
+    build:
+      context: ./todo-backend # The context will pick this directory as the "build context"
+      dockerfile: ./todo-backend/dev.Dockerfile # This will simply tell which dockerfile to read
+    volumes:
+      - ./todo-backend/:/usr/src/app # The path can be relative, so ./ is enough to say "the same location as the docker-compose.yml"
+    ports:
+      - 3000:3000
+    container_name: todos-backend-dev # This will name the container todos-backend-dev as the todo-backend-dev name container already exists in docker so give unique name
+    depends_on: # https://docs.docker.com/compose/compose-file/#depends_on
+      - mongo
+      - redis
+    environment: # use 'host.docker.internal' in both mongo_url & redis_url instead of localhost: https://stackoverflow.com/questions/63764895/redis-connect-econnrefused-127-0-0-16379
+      - MONGO_URL=mongodb://the_username:the_password@host.docker.internal:3456/the_database
+      - REDIS_URL=redis://host.docker.internal:6379
+
   nginx:
     image: nginx:1.20.1
     volumes:
@@ -22,3 +58,7 @@ services:
     container_name: reverse-proxy-server
     depends_on:
       - todo-frontend # wait for the frontend container to be started
+      - todo-backend # wait for the backend container to be started
+
+volumes:
+  mongo_data: null
